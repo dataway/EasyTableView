@@ -19,10 +19,10 @@
 
 @interface FlipsideViewController : UIViewController <EasyTableViewDelegate, ImageStoreDelegate>
 
-@property (nonatomic, weak) IBOutlet id<FlipsideViewControllerDelegate> delegate;
-@property (nonatomic) IBOutlet UILabel *errorLabel;
-@property (nonatomic) ImageStore *imageStore;
-@property (nonatomic) EasyTableView *easyTableView;
+@property (nonatomic, unsafe_unretained) IBOutlet id<FlipsideViewControllerDelegate> delegate;
+@property (nonatomic, strong) IBOutlet UILabel *errorLabel;
+@property (nonatomic, strong) ImageStore *imageStore;
+@property (nonatomic, strong) EasyTableView *easyTableView;
 
 - (IBAction)done:(id)sender;
 

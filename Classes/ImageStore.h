@@ -18,11 +18,11 @@
 
 @interface ImageStore : NSObject
 
-@property (nonatomic, weak) id<ImageStoreDelegate> delegate;
-@property (nonatomic) NSOperationQueue *operationQueue;
-@property (nonatomic) NSArray *titles;
-@property (nonatomic) NSArray *urls;
-@property (nonatomic) NSMutableDictionary *imageCache;
+@property (nonatomic, unsafe_unretained) id<ImageStoreDelegate> delegate;
+@property (nonatomic, strong) NSOperationQueue *operationQueue;
+@property (nonatomic, strong) NSArray *titles;
+@property (nonatomic, strong) NSArray *urls;
+@property (nonatomic, strong) NSMutableDictionary *imageCache;
 
 - (id)initWithDelegate:(id<ImageStoreDelegate>)delegate;
 - (UIImage *)imageAtIndex:(NSUInteger)index;
