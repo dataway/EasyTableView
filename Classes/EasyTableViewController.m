@@ -64,8 +64,8 @@
 #pragma mark EasyTableView Initialization
 
 - (void)setupHorizontalView {
-	CGRect frameRect	= CGRectMake(0, LANDSCAPE_HEIGHT - HORIZONTAL_TABLEVIEW_HEIGHT, PORTRAIT_WIDTH, HORIZONTAL_TABLEVIEW_HEIGHT);
-	EasyTableView *view	= [[EasyTableView alloc] initWithFrame:frameRect numberOfColumns:NUM_OF_CELLS ofWidth:VERTICAL_TABLEVIEW_WIDTH];
+	CGRect frameRect	= CGRectMake(0, LANDSCAPE_HEIGHT - HORIZONTAL_TABLEVIEW_HEIGHT, PORTRAIT_WIDTH - VERTICAL_TABLEVIEW_WIDTH, HORIZONTAL_TABLEVIEW_HEIGHT);
+	EasyTableView *view	= [[EasyTableView alloc] initWithFrame:frameRect orientation:EasyTableViewOrientationRightToLeft numberOfItems:NUM_OF_CELLS ofSize:VERTICAL_TABLEVIEW_WIDTH];
 	self.horizontalView = view;
 	
 	horizontalView.delegate						= self;
@@ -81,7 +81,7 @@
 
 - (void)setupVerticalView {
 	CGRect frameRect	= CGRectMake(PORTRAIT_WIDTH - VERTICAL_TABLEVIEW_WIDTH, 0, VERTICAL_TABLEVIEW_WIDTH, LANDSCAPE_HEIGHT);
-	EasyTableView *view	= [[EasyTableView alloc] initWithFrame:frameRect numberOfRows:NUM_OF_CELLS ofHeight:HORIZONTAL_TABLEVIEW_HEIGHT];
+	EasyTableView *view	= [[EasyTableView alloc] initWithFrame:frameRect orientation:EasyTableViewOrientationTopToBottom numberOfItems:NUM_OF_CELLS ofSize:HORIZONTAL_TABLEVIEW_HEIGHT];
 	self.verticalView	= view;
 	
 	verticalView.delegate					= self;

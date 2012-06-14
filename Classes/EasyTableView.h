@@ -39,8 +39,10 @@
 #define CELL_CONTENT_TAG		802
 
 typedef enum {
-	EasyTableViewOrientationVertical,
-	EasyTableViewOrientationHorizontal
+	EasyTableViewOrientationTopToBottom,
+	EasyTableViewOrientationLeftToRight,
+	EasyTableViewOrientationBottomToTop,
+	EasyTableViewOrientationRightToLeft,
 } EasyTableViewOrientation;
 
 @class EasyTableView;
@@ -66,14 +68,15 @@ typedef enum {
 }
 
 @property (nonatomic, unsafe_unretained) id<EasyTableViewDelegate> delegate;
-@property (nonatomic, readonly, unsafe_unretained) UITableView *tableView;
-@property (nonatomic, readonly, unsafe_unretained) NSArray *visibleViews;
+@property (nonatomic, unsafe_unretained, readonly) UITableView *tableView;
+@property (nonatomic, unsafe_unretained, readonly) NSArray *visibleViews;
 @property (nonatomic, strong) NSIndexPath *selectedIndexPath;
-@property (nonatomic, copy) UIColor *cellBackgroundColor;
-@property (nonatomic, readonly) EasyTableViewOrientation orientation;
+@property (nonatomic, strong) UIColor *cellBackgroundColor;
+@property (nonatomic, assign, readonly) EasyTableViewOrientation orientation;
 @property (nonatomic, assign) CGPoint contentOffset;
 @property (nonatomic, assign) NSUInteger numberOfCells;
 
+- (id)initWithFrame:(CGRect)frame orientation:(EasyTableViewOrientation)orientation numberOfItems:(NSUInteger)numItems ofSize:(CGFloat)itemSize;
 - (id)initWithFrame:(CGRect)frame numberOfColumns:(NSUInteger)numCells ofWidth:(CGFloat)cellWidth;
 - (id)initWithFrame:(CGRect)frame numberOfRows:(NSUInteger)numCells ofHeight:(CGFloat)cellHeight;
 - (CGPoint)offsetForView:(UIView *)cell;

@@ -56,7 +56,7 @@
 
 - (void)setupEasyTableViewWithNumCells:(NSUInteger)count {
 	CGRect frameRect	= CGRectMake(0, 44, self.view.bounds.size.width, TABLEVIEW_HEIGHT);
-	EasyTableView *view	= [[EasyTableView alloc] initWithFrame:frameRect numberOfColumns:count ofWidth:TABLECELL_WIDTH];
+	EasyTableView *view	= [[EasyTableView alloc] initWithFrame:frameRect orientation:EasyTableViewOrientationRightToLeft numberOfItems:count ofSize:TABLECELL_WIDTH];
 	self.easyTableView	= view;
 	
 	self.easyTableView.delegate						= self;
