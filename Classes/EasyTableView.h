@@ -59,9 +59,10 @@ typedef enum {
 @protocol EasyTableViewDataSource <NSObject>
 - (NSUInteger)numberOfCellsForEasyTableView:(EasyTableView *)view inSection:(NSInteger)section;
 - (CGFloat)easyTableView:(EasyTableView *)easyTableView heightOrWidthForCellAtIndexPath:(NSIndexPath *)indexPath;
-- (UIView *)easyTableView:(EasyTableView *)easyTableView viewForRect:(CGRect)rect;
-- (void)easyTableView:(EasyTableView *)easyTableView setDataForView:(UIView *)view forIndexPath:(NSIndexPath*)indexPath;
+- (UIView *)easyTableView:(EasyTableView *)easyTableView viewForRect:(CGRect)rect forCellAtIndexPath:(NSIndexPath *)indexPath;
+- (void)easyTableView:(EasyTableView *)easyTableView setDataForView:(UIView *)view forCellAtIndexPath:(NSIndexPath *)indexPath;
 @optional
+- (NSString *)easyTableView:(EasyTableView *)easyTableView reuseIdentifierForCellAtIndexPath:(NSIndexPath *)indexPath;
 - (NSUInteger)numberOfSectionsInEasyTableView:(EasyTableView *)easyTableView;
 - (UIView*)easyTableView:(EasyTableView *)easyTableView viewForHeaderInSection:(NSInteger)section;
 - (UIView*)easyTableView:(EasyTableView *)easyTableView viewForFooterInSection:(NSInteger)section;

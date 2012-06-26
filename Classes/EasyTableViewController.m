@@ -115,7 +115,7 @@
 
 // These delegate methods support both example views - first delegate method creates the necessary views
 
-- (UIView *)easyTableView:(EasyTableView *)easyTableView viewForRect:(CGRect)rect {
+- (UIView *)easyTableView:(EasyTableView *)easyTableView viewForRect:(CGRect)rect forCellAtIndexPath:(NSIndexPath *)indexPath {
 	CGRect labelRect		= CGRectMake(10, 10, rect.size.width-20, rect.size.height-20);
 	UILabel *label			= [[UILabel alloc] initWithFrame:labelRect];
 	label.textAlignment		= UITextAlignmentCenter;
@@ -123,10 +123,15 @@
 	label.font				= [UIFont boldSystemFontOfSize:60];
 	
 	// Use a different color for the two different examples
-	if (easyTableView == horizontalView)
-		label.backgroundColor = [[UIColor redColor] colorWithAlphaComponent:0.3];
-	else
+	if (easyTableView == horizontalView) {
+        if (indexPath.row % 2 == 0) {
+            label.backgroundColor = [[UIColor redColor] colorWithAlphaComponent:0.3];
+        } else {
+            label.backgroundColor = [[UIColor yellowColor] colorWithAlphaComponent:0.3];
+        }
+	} else {
 		label.backgroundColor = [[UIColor orangeColor] colorWithAlphaComponent:0.3];
+    }
 	
 	UIImageView *borderView		= [[UIImageView alloc] initWithFrame:label.bounds];
 	borderView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
@@ -137,9 +142,17 @@
 	return label;
 }
 
+- (NSString *)easyTableView:(EasyTableView *)easyTableView reuseIdentifierForCellAtIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.row % 2 == 0) {
+        return @"redCell";
+    } else {
+        return @"yellowCell";
+    }
+}
+
 // Second delegate populates the views with data from a data source
 
-- (void)easyTableView:(EasyTableView *)easyTableView setDataForView:(UIView *)view forIndexPath:(NSIndexPath *)indexPath {
+- (void)easyTableView:(EasyTableView *)easyTableView setDataForView:(UIView *)view forCellAtIndexPath:(NSIndexPath *)indexPath {
 	UILabel *label	= (UILabel *)view;
 	label.text		= [NSString stringWithFormat:@"%i", indexPath.row];
 	
@@ -161,10 +174,15 @@
 }
 
 - (CGFloat)easyTableView:(EasyTableView *)easyTableView heightOrWidthForCellAtIndexPath:(NSIndexPath *)indexPath {
-    if (easyTableView == self.horizontalView)
-        return HORIZONTAL_TABLEVIEW_HEIGHT;
-    else
+    if (easyTableView == self.horizontalView) {
+        if (indexPath.row % 2 == 0) {
+            return HORIZONTAL_TABLEVIEW_HEIGHT;
+        } else {
+            return 2 * HORIZONTAL_TABLEVIEW_HEIGHT;
+        }
+    } else {
         return VERTICAL_TABLEVIEW_WIDTH;
+    }
 }
 
 #pragma mark -

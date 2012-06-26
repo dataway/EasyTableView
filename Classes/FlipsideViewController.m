@@ -71,7 +71,7 @@
 
 #pragma mark - EasyTableViewDelegate
 
-- (UIView *)easyTableView:(EasyTableView *)easyTableView viewForRect:(CGRect)rect {
+- (UIView *)easyTableView:(EasyTableView *)easyTableView viewForRect:(CGRect)rect forCellAtIndexPath:(NSIndexPath *)indexPath {
 	// Create a container view for an EasyTableView cell
 	UIView *container = [[UIView alloc] initWithFrame:rect];;
 	
@@ -98,7 +98,7 @@
 
 // Second delegate populates the views with data from a data source
 
-- (void)easyTableView:(EasyTableView *)easyTableView setDataForView:(UIView *)view forIndexPath:(NSIndexPath *)indexPath {
+- (void)easyTableView:(EasyTableView *)easyTableView setDataForView:(UIView *)view forCellAtIndexPath:(NSIndexPath *)indexPath {
 	// Set the image title for the given index
 	UILabel *label = (UILabel *)[view viewWithTag:LABEL_TAG];
 	label.text = [self.imageStore.titles objectAtIndex:indexPath.row];

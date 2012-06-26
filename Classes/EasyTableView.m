@@ -15,7 +15,7 @@
 
 @interface EasyTableView() <UITableViewDelegate, UITableViewDataSource>
 - (void)createTableWithOrientation:(EasyTableViewOrientation)orientation;
-- (void)prepareRotatedView:(UIView *)rotatedView;
+- (void)prepareRotatedView:(UIView *)rotatedView forCellAtIndexPath:(NSIndexPath *)indexPath;
 - (void)setDataForRotatedView:(UIView *)rotatedView forIndexPath:(NSIndexPath *)indexPath;
 @end
 
@@ -308,23 +308,28 @@
 #pragma mark -
 #pragma mark TableViewDataSource
 
-- (void)setCell:(UITableViewCell *)cell boundsForOrientation:(EasyTableViewOrientation)theOrientation {
-	if (EasyTableViewOrientationIsHorizontal(theOrientation)) {
-		cell.bounds	= CGRectMake(0, 0, self.bounds.size.height, _cellWidthOrHeight);
+- (void)setBoundsForCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath {
+    CGFloat heightOrWidth = [_dataSource easyTableView:self heightOrWidthForCellAtIndexPath:indexPath];
+	if (EasyTableViewOrientationIsHorizontal(_orientation)) {
+		cell.bounds	= CGRectMake(0, 0, self.bounds.size.height, heightOrWidth);
 	} else {
-		cell.bounds	= CGRectMake(0, 0, self.bounds.size.width, _cellWidthOrHeight);
+		cell.bounds	= CGRectMake(0, 0, self.bounds.size.width, heightOrWidth);
 	}
 }
 
-
 - (UITableViewCell *)tableView:(UITableView *)aTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    static NSString *CellIdentifier = @"EasyTableViewCell";
+    static NSString *defaultIdentifier = @"EasyTableViewCell";
     
-    UITableViewCell *cell = [aTableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    NSString *reuseIdentifier = defaultIdentifier;
+    if ([_dataSource respondsToSelector:@selector(easyTableView:reuseIdentifierForCellAtIndexPath:)]) {
+        reuseIdentifier = [_dataSource easyTableView:self reuseIdentifierForCellAtIndexPath:indexPath];
+    }
+    
+    UITableViewCell *cell = [aTableView dequeueReusableCellWithIdentifier:reuseIdentifier];
     if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:reuseIdentifier];
 		
-		[self setCell:cell boundsForOrientation:_orientation];
+        [self setBoundsForCell:cell atIndexPath:indexPath];
 		
 		cell.contentView.frame = cell.bounds;
 		cell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -359,11 +364,11 @@
 		rotatedView.clipsToBounds = YES;
 		
 		// Prepare and add the custom subviews
-		[self prepareRotatedView:rotatedView];
+		[self prepareRotatedView:rotatedView forCellAtIndexPath:indexPath];
 		
 		[cell.contentView addSubview:rotatedView];
 	}
-	[self setCell:cell boundsForOrientation:_orientation];
+    [self setBoundsForCell:cell atIndexPath:indexPath];
 	
 	[self setDataForRotatedView:[cell.contentView viewWithTag:ROTATED_CELL_VIEW_TAG] forIndexPath:indexPath];
     return cell;
@@ -387,8 +392,8 @@
 #pragma mark -
 #pragma mark Rotation
 
-- (void)prepareRotatedView:(UIView *)rotatedView {
-	UIView *content = [_dataSource easyTableView:self viewForRect:rotatedView.bounds];
+- (void)prepareRotatedView:(UIView *)rotatedView forCellAtIndexPath:(NSIndexPath *)indexPath {
+    UIView *content = [_dataSource easyTableView:self viewForRect:rotatedView.bounds forCellAtIndexPath:indexPath];
 	
 	// Add a default view if none is provided
 	if (content == nil)
@@ -403,7 +408,7 @@
 - (void)setDataForRotatedView:(UIView *)rotatedView forIndexPath:(NSIndexPath *)indexPath {
 	UIView *content = [rotatedView viewWithTag:CELL_CONTENT_TAG];
 	
-    [_dataSource easyTableView:self setDataForView:content forIndexPath:indexPath];
+    [_dataSource easyTableView:self setDataForView:content forCellAtIndexPath:indexPath];
 }
 
 
