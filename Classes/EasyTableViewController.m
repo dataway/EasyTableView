@@ -65,10 +65,11 @@
 
 - (void)setupHorizontalView {
 	CGRect frameRect	= CGRectMake(0, LANDSCAPE_HEIGHT - HORIZONTAL_TABLEVIEW_HEIGHT, PORTRAIT_WIDTH - VERTICAL_TABLEVIEW_WIDTH, HORIZONTAL_TABLEVIEW_HEIGHT);
-	EasyTableView *view	= [[EasyTableView alloc] initWithFrame:frameRect orientation:EasyTableViewOrientationRightToLeft numberOfItems:NUM_OF_CELLS ofSize:VERTICAL_TABLEVIEW_WIDTH];
+	EasyTableView *view	= [[EasyTableView alloc] initWithFrame:frameRect orientation:EasyTableViewOrientationRightToLeft itemSize:VERTICAL_TABLEVIEW_WIDTH];
 	self.horizontalView = view;
 	
 	horizontalView.delegate						= self;
+	horizontalView.dataSource					= self;
 	horizontalView.tableView.backgroundColor	= TABLE_BACKGROUND_COLOR;
 	horizontalView.tableView.allowsSelection	= YES;
 	horizontalView.tableView.separatorColor		= [UIColor darkGrayColor];
@@ -81,10 +82,11 @@
 
 - (void)setupVerticalView {
 	CGRect frameRect	= CGRectMake(PORTRAIT_WIDTH - VERTICAL_TABLEVIEW_WIDTH, 0, VERTICAL_TABLEVIEW_WIDTH, LANDSCAPE_HEIGHT);
-	EasyTableView *view	= [[EasyTableView alloc] initWithFrame:frameRect orientation:EasyTableViewOrientationTopToBottom numberOfItems:NUM_OF_CELLS ofSize:HORIZONTAL_TABLEVIEW_HEIGHT];
+	EasyTableView *view	= [[EasyTableView alloc] initWithFrame:frameRect orientation:EasyTableViewOrientationTopToBottom itemSize:HORIZONTAL_TABLEVIEW_HEIGHT];
 	self.verticalView	= view;
 	
 	verticalView.delegate					= self;
+	verticalView.dataSource					= self;
 	verticalView.tableView.backgroundColor	= TABLE_BACKGROUND_COLOR;
 	verticalView.tableView.allowsSelection	= YES;
 	verticalView.tableView.separatorColor	= [[UIColor blackColor] colorWithAlphaComponent:0.1];
@@ -156,6 +158,13 @@
 	
 	UILabel *label	= (UILabel *)selectedView;
 	bigLabel.text	= label.text;
+}
+
+- (CGFloat)easyTableView:(EasyTableView *)easyTableView heightOrWidthForCellAtIndexPath:(NSIndexPath *)indexPath {
+    if (easyTableView == self.horizontalView)
+        return HORIZONTAL_TABLEVIEW_HEIGHT;
+    else
+        return VERTICAL_TABLEVIEW_WIDTH;
 }
 
 #pragma mark -

@@ -10,7 +10,7 @@
 #import "EasyTableView.h"
 #import "FlipsideViewController.h"
 
-@interface EasyTableViewController : UIViewController <EasyTableViewDelegate, FlipsideViewControllerDelegate> {
+@interface EasyTableViewController : UIViewController <EasyTableViewDelegate, EasyTableViewDataSource, FlipsideViewControllerDelegate> {
 	IBOutlet UILabel *bigLabel;
 	EasyTableView *verticalView;
 	EasyTableView *horizontalView;

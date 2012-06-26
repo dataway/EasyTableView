@@ -9,58 +9,33 @@
 #import <QuartzCore/QuartzCore.h>
 #import "EasyTableView.h"
 
-#define ANIMATION_DURATION	0.30
-
 #define EasyTableViewOrientationIsHorizontal(orientation) ((orientation) == EasyTableViewOrientationLeftToRight || (orientation) == EasyTableViewOrientationRightToLeft)
 #define EasyTableViewOrientationIsVertical(orientation) ((orientation) == EasyTableViewOrientationTopToBottom || (orientation) == EasyTableViewOrientationBottomToTop)
 
 
-@interface EasyTableView (PrivateMethods)
+@interface EasyTableView() <UITableViewDelegate, UITableViewDataSource>
 - (void)createTableWithOrientation:(EasyTableViewOrientation)orientation;
 - (void)prepareRotatedView:(UIView *)rotatedView;
 - (void)setDataForRotatedView:(UIView *)rotatedView forIndexPath:(NSIndexPath *)indexPath;
 @end
 
-@implementation EasyTableView
 
-@synthesize delegate, cellBackgroundColor;
-@synthesize selectedIndexPath = _selectedIndexPath;
-@synthesize orientation = _orientation;
-@synthesize numberOfCells = _numItems;
+@implementation EasyTableView {
+	CGFloat _cellWidthOrHeight;
+}
+
+@synthesize delegate = _delegate, dataSource = _dataSource, cellBackgroundColor = _cellBackgroundColor, selectedIndexPath = _selectedIndexPath, orientation = _orientation;
 
 #pragma mark -
 #pragma mark Initialization
 
 
-- (id)initWithFrame:(CGRect)frame orientation:(EasyTableViewOrientation)orientation numberOfItems:(NSUInteger)numItems ofSize:(CGFloat)itemSize {
+- (id)initWithFrame:(CGRect)frame orientation:(EasyTableViewOrientation)orientation itemSize:(CGFloat)itemSize {
     if (self = [super initWithFrame:frame]) {
-		_numItems			= numItems;
 		_cellWidthOrHeight	= itemSize;
 		
 		[self createTableWithOrientation:orientation];
 	}
-    return self;
-}
-
-
-- (id)initWithFrame:(CGRect)frame numberOfColumns:(NSUInteger)numCols ofWidth:(CGFloat)width {
-    if (self = [super initWithFrame:frame]) {
-		_numItems			= numCols;
-		_cellWidthOrHeight	= width;
-		
-		[self createTableWithOrientation:EasyTableViewOrientationLeftToRight];
-	}
-    return self;
-}
-
-
-- (id)initWithFrame:(CGRect)frame numberOfRows:(NSUInteger)numRows ofHeight:(CGFloat)height {
-    if (self = [super initWithFrame:frame]) {
-		_numItems			= numRows;
-		_cellWidthOrHeight	= height;
-		
-		[self createTableWithOrientation:EasyTableViewOrientationTopToBottom];
-    }
     return self;
 }
 
@@ -96,6 +71,11 @@
 	tableView.showsHorizontalScrollIndicator = NO;
 	
 	[self addSubview:tableView];
+}
+
+
+- (void)reloadData {
+    [self.tableView reloadData];
 }
 
 
@@ -172,14 +152,14 @@
 		UITableViewCell *deselectedCell	= (UITableViewCell *)[self.tableView cellForRowAtIndexPath:oldIndexPath];
 		UITableViewCell *selectedCell	= (UITableViewCell *)[self.tableView cellForRowAtIndexPath:_selectedIndexPath];
 		
-		if ([delegate respondsToSelector:@selector(easyTableView:selectedView:atIndexPath:deselectedView:)]) {
+		if ([_delegate respondsToSelector:@selector(easyTableView:selectedView:atIndexPath:deselectedView:)]) {
 			UIView *selectedView = [selectedCell viewWithTag:CELL_CONTENT_TAG];
 			UIView *deselectedView = [deselectedCell viewWithTag:CELL_CONTENT_TAG];
 			
-			[delegate easyTableView:self
-					   selectedView:selectedView
-						atIndexPath:_selectedIndexPath
-					 deselectedView:deselectedView];
+			[_delegate easyTableView:self
+                        selectedView:selectedView
+                         atIndexPath:_selectedIndexPath
+                      deselectedView:deselectedView];
 		}
 	}
 }
@@ -188,8 +168,8 @@
 #pragma mark Multiple Sections
 
 -(CGFloat)tableView:(UITableView*)tableView heightForHeaderInSection:(NSInteger)section {
-    if ([delegate respondsToSelector:@selector(easyTableView:viewForHeaderInSection:)]) {
-        UIView *headerView = [delegate easyTableView:self viewForHeaderInSection:section];
+    if ([_dataSource respondsToSelector:@selector(easyTableView:viewForHeaderInSection:)]) {
+        UIView *headerView = [_dataSource easyTableView:self viewForHeaderInSection:section];
         if (EasyTableViewOrientationIsHorizontal(_orientation)) {
 			return headerView.frame.size.width;
 		} else {
@@ -200,8 +180,8 @@
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
-    if ([delegate respondsToSelector:@selector(easyTableView:viewForFooterInSection:)]) {
-        UIView *footerView = [delegate easyTableView:self viewForFooterInSection:section];
+    if ([_dataSource respondsToSelector:@selector(easyTableView:viewForFooterInSection:)]) {
+        UIView *footerView = [_dataSource easyTableView:self viewForFooterInSection:section];
         if (EasyTableViewOrientationIsHorizontal(_orientation)) {
 			return footerView.frame.size.width;
 		} else {
@@ -232,22 +212,22 @@
     } else {
 		sectionView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     }
-        
+    
 	[rotatedView addSubview:sectionView];
 	return rotatedView;
 }
 
 -(UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-    if ([delegate respondsToSelector:@selector(easyTableView:viewForHeaderInSection:)]) {
-		UIView *sectionView = [delegate easyTableView:self viewForHeaderInSection:section];
+    if ([_dataSource respondsToSelector:@selector(easyTableView:viewForHeaderInSection:)]) {
+		UIView *sectionView = [_dataSource easyTableView:self viewForHeaderInSection:section];
 		return [self viewToHoldSectionView:sectionView];
     }
     return nil;
 }
 
 -(UIView*)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
-    if ([delegate respondsToSelector:@selector(easyTableView:viewForFooterInSection:)]) {
-		UIView *sectionView = [delegate easyTableView:self viewForFooterInSection:section];
+    if ([_dataSource respondsToSelector:@selector(easyTableView:viewForFooterInSection:)]) {
+		UIView *sectionView = [_dataSource easyTableView:self viewForFooterInSection:section];
 		return [self viewToHoldSectionView:sectionView];
     }
     return nil;
@@ -255,8 +235,8 @@
 
 -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     
-    if ([delegate respondsToSelector:@selector(numberOfSectionsInEasyTableView:)]) {
-        return [delegate numberOfSectionsInEasyTableView:self];
+    if ([_dataSource respondsToSelector:@selector(numberOfSectionsInEasyTableView:)]) {
+        return [_dataSource numberOfSectionsInEasyTableView:self];
     }
     return 1;
 }
@@ -303,8 +283,8 @@
 
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if ([delegate respondsToSelector:@selector(easyTableView:heightOrWidthForCellAtIndexPath:)]) {
-        return [delegate easyTableView:self heightOrWidthForCellAtIndexPath:indexPath];
+    if ([_dataSource respondsToSelector:@selector(easyTableView:heightOrWidthForCellAtIndexPath:)]) {
+        return [_dataSource easyTableView:self heightOrWidthForCellAtIndexPath:indexPath];
     }
     return _cellWidthOrHeight;
 }
@@ -320,8 +300,8 @@
 
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-	if ([delegate respondsToSelector:@selector(easyTableView:scrolledToOffset:)])
-		[delegate easyTableView:self scrolledToOffset:self.contentOffset];
+	if ([_delegate respondsToSelector:@selector(easyTableView:scrolledToOffset:)])
+		[_delegate easyTableView:self scrolledToOffset:self.contentOffset];
 }
 
 
@@ -391,10 +371,10 @@
 
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	NSUInteger numOfItems = _numItems;
+	NSUInteger numOfItems = 0;
 	
-	if ([delegate respondsToSelector:@selector(numberOfCellsForEasyTableView:inSection:)]) {
-		numOfItems = [delegate numberOfCellsForEasyTableView:self inSection:section];
+	if ([_dataSource respondsToSelector:@selector(numberOfCellsForEasyTableView:inSection:)]) {
+		numOfItems = [_dataSource numberOfCellsForEasyTableView:self inSection:section];
 		
 		// Animate any changes in the number of items
 		[tableView beginUpdates];
@@ -408,7 +388,7 @@
 #pragma mark Rotation
 
 - (void)prepareRotatedView:(UIView *)rotatedView {
-	UIView *content = [delegate easyTableView:self viewForRect:rotatedView.bounds];
+	UIView *content = [_dataSource easyTableView:self viewForRect:rotatedView.bounds];
 	
 	// Add a default view if none is provided
 	if (content == nil)
@@ -423,7 +403,7 @@
 - (void)setDataForRotatedView:(UIView *)rotatedView forIndexPath:(NSIndexPath *)indexPath {
 	UIView *content = [rotatedView viewWithTag:CELL_CONTENT_TAG];
 	
-   [delegate easyTableView:self setDataForView:content forIndexPath:indexPath];
+    [_dataSource easyTableView:self setDataForView:content forIndexPath:indexPath];
 }
 
 

@@ -17,7 +17,7 @@
 - (void)flipsideViewControllerDidFinish:(FlipsideViewController *)controller;
 @end
 
-@interface FlipsideViewController : UIViewController <EasyTableViewDelegate, ImageStoreDelegate>
+@interface FlipsideViewController : UIViewController <EasyTableViewDelegate, EasyTableViewDataSource, ImageStoreDelegate>
 
 @property (nonatomic, unsafe_unretained) IBOutlet id<FlipsideViewControllerDelegate> delegate;
 @property (nonatomic, strong) IBOutlet UILabel *errorLabel;

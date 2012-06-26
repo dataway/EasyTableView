@@ -56,10 +56,11 @@
 
 - (void)setupEasyTableViewWithNumCells:(NSUInteger)count {
 	CGRect frameRect	= CGRectMake(0, 44, self.view.bounds.size.width, TABLEVIEW_HEIGHT);
-	EasyTableView *view	= [[EasyTableView alloc] initWithFrame:frameRect orientation:EasyTableViewOrientationRightToLeft numberOfItems:count ofSize:TABLECELL_WIDTH];
+	EasyTableView *view	= [[EasyTableView alloc] initWithFrame:frameRect orientation:EasyTableViewOrientationRightToLeft itemSize:TABLECELL_WIDTH];
 	self.easyTableView	= view;
 	
 	self.easyTableView.delegate						= self;
+    self.easyTableView.dataSource                   = self;
 	self.easyTableView.tableView.backgroundColor	= [UIColor clearColor];
 	self.easyTableView.tableView.separatorColor		= [UIColor blackColor];
 	self.easyTableView.cellBackgroundColor			= [UIColor blackColor];
@@ -105,6 +106,14 @@
 	// Set the image for the given index
 	UIImageView *imageView = (UIImageView *)[view viewWithTag:IMAGE_TAG];
 	imageView.image = [self.imageStore imageAtIndex:indexPath.row];
+}
+
+- (NSUInteger)numberOfCellsForEasyTableView:(EasyTableView *)view inSection:(NSInteger)section {
+    return [self.imageStore.titles count];
+}
+
+- (CGFloat)easyTableView:(EasyTableView *)easyTableView heightOrWidthForCellAtIndexPath:(NSIndexPath *)indexPath {
+    return TABLECELL_WIDTH;
 }
 
 #pragma mark - ImageStoreDelegate

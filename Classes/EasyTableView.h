@@ -45,40 +45,42 @@ typedef enum {
 	EasyTableViewOrientationRightToLeft,
 } EasyTableViewOrientation;
 
+
 @class EasyTableView;
 
+
 @protocol EasyTableViewDelegate <NSObject>
-- (UIView *)easyTableView:(EasyTableView *)easyTableView viewForRect:(CGRect)rect;
-- (void)easyTableView:(EasyTableView *)easyTableView setDataForView:(UIView *)view forIndexPath:(NSIndexPath*)indexPath;
 @optional
 - (void)easyTableView:(EasyTableView *)easyTableView selectedView:(UIView *)selectedView atIndexPath:(NSIndexPath *)indexPath deselectedView:(UIView *)deselectedView;
 - (void)easyTableView:(EasyTableView *)easyTableView scrolledToOffset:(CGPoint)contentOffset;
-- (NSUInteger)numberOfSectionsInEasyTableView:(EasyTableView*)easyTableView;
-- (NSUInteger)numberOfCellsForEasyTableView:(EasyTableView *)view inSection:(NSInteger)section;
-- (UIView*)easyTableView:(EasyTableView*)easyTableView viewForHeaderInSection:(NSInteger)section;
-- (UIView*)easyTableView:(EasyTableView*)easyTableView viewForFooterInSection:(NSInteger)section;
-- (CGFloat)easyTableView:(EasyTableView *)easyTableView heightOrWidthForCellAtIndexPath:(NSIndexPath *)indexPath;
 @end
 
 
-@interface EasyTableView : UIView <UITableViewDelegate, UITableViewDataSource> {
-@private
-	CGFloat		_cellWidthOrHeight;
-	NSUInteger	_numItems;
-}
+@protocol EasyTableViewDataSource <NSObject>
+- (NSUInteger)numberOfCellsForEasyTableView:(EasyTableView *)view inSection:(NSInteger)section;
+- (CGFloat)easyTableView:(EasyTableView *)easyTableView heightOrWidthForCellAtIndexPath:(NSIndexPath *)indexPath;
+- (UIView *)easyTableView:(EasyTableView *)easyTableView viewForRect:(CGRect)rect;
+- (void)easyTableView:(EasyTableView *)easyTableView setDataForView:(UIView *)view forIndexPath:(NSIndexPath*)indexPath;
+@optional
+- (NSUInteger)numberOfSectionsInEasyTableView:(EasyTableView *)easyTableView;
+- (UIView*)easyTableView:(EasyTableView *)easyTableView viewForHeaderInSection:(NSInteger)section;
+- (UIView*)easyTableView:(EasyTableView *)easyTableView viewForFooterInSection:(NSInteger)section;
+@end
+
+
+@interface EasyTableView : UIView
 
 @property (nonatomic, unsafe_unretained) id<EasyTableViewDelegate> delegate;
+@property (nonatomic, unsafe_unretained) id<EasyTableViewDataSource> dataSource;
 @property (nonatomic, unsafe_unretained, readonly) UITableView *tableView;
 @property (nonatomic, unsafe_unretained, readonly) NSArray *visibleViews;
 @property (nonatomic, strong) NSIndexPath *selectedIndexPath;
 @property (nonatomic, strong) UIColor *cellBackgroundColor;
 @property (nonatomic, assign, readonly) EasyTableViewOrientation orientation;
 @property (nonatomic, assign) CGPoint contentOffset;
-@property (nonatomic, assign) NSUInteger numberOfCells;
 
-- (id)initWithFrame:(CGRect)frame orientation:(EasyTableViewOrientation)orientation numberOfItems:(NSUInteger)numItems ofSize:(CGFloat)itemSize;
-- (id)initWithFrame:(CGRect)frame numberOfColumns:(NSUInteger)numCells ofWidth:(CGFloat)cellWidth;
-- (id)initWithFrame:(CGRect)frame numberOfRows:(NSUInteger)numCells ofHeight:(CGFloat)cellHeight;
+- (id)initWithFrame:(CGRect)frame orientation:(EasyTableViewOrientation)orientation itemSize:(CGFloat)itemSize;
+- (void)reloadData;
 - (CGPoint)offsetForView:(UIView *)cell;
 - (void)setContentOffset:(CGPoint)offset animated:(BOOL)animated;
 - (void)selectCellAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated;
