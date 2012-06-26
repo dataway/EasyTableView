@@ -51,16 +51,16 @@ typedef enum {
 
 @protocol EasyTableViewDelegate <NSObject>
 @optional
-- (void)easyTableView:(EasyTableView *)easyTableView selectedView:(UIView *)selectedView atIndexPath:(NSIndexPath *)indexPath deselectedView:(UIView *)deselectedView;
-- (void)easyTableView:(EasyTableView *)easyTableView scrolledToOffset:(CGPoint)contentOffset;
+- (void)easyTableView:(EasyTableView *)tableView didSelectCellAtIndexPath:(NSIndexPath *)indexPath;
+- (void)easyTableView:(EasyTableView *)tableView didScrollToContentOffset:(CGPoint)contentOffset;
 @end
 
 
 @protocol EasyTableViewDataSource <NSObject>
-- (NSUInteger)numberOfCellsForEasyTableView:(EasyTableView *)view inSection:(NSInteger)section;
-- (CGFloat)easyTableView:(EasyTableView *)easyTableView heightOrWidthForCellAtIndexPath:(NSIndexPath *)indexPath;
-- (UIView *)easyTableView:(EasyTableView *)easyTableView viewForRect:(CGRect)rect forCellAtIndexPath:(NSIndexPath *)indexPath;
-- (void)easyTableView:(EasyTableView *)easyTableView setDataForView:(UIView *)view forCellAtIndexPath:(NSIndexPath *)indexPath;
+- (NSUInteger)easyTableView:(EasyTableView *)tableView numberOfCellsInSection:(NSInteger)section;
+- (CGFloat)easyTableView:(EasyTableView *)tableView heightOrWidthForCellAtIndexPath:(NSIndexPath *)indexPath;
+- (UIView *)easyTableView:(EasyTableView *)tableView viewForRect:(CGRect)rect forCellAtIndexPath:(NSIndexPath *)indexPath;
+- (void)easyTableView:(EasyTableView *)tableView setDataInView:(UIView *)view forCellAtIndexPath:(NSIndexPath *)indexPath;
 @optional
 - (NSString *)easyTableView:(EasyTableView *)easyTableView reuseIdentifierForCellAtIndexPath:(NSIndexPath *)indexPath;
 - (NSUInteger)numberOfSectionsInEasyTableView:(EasyTableView *)easyTableView;

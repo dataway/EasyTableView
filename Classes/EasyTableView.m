@@ -137,7 +137,7 @@
 
 - (void)selectCellAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated {
 	self.selectedIndexPath	= indexPath;
-	CGPoint defaultOffset	= CGPointMake(0, indexPath.row  *_cellWidthOrHeight);
+	CGPoint defaultOffset	= CGPointMake(0, indexPath.row * _cellWidthOrHeight);
 	
 	[self.tableView setContentOffset:defaultOffset animated:animated];
 }
@@ -145,21 +145,9 @@
 
 - (void)setSelectedIndexPath:(NSIndexPath *)indexPath {
 	if (![_selectedIndexPath isEqual:indexPath]) {
-		NSIndexPath *oldIndexPath = [_selectedIndexPath copy];
-		
 		_selectedIndexPath = indexPath;
-		
-		UITableViewCell *deselectedCell	= (UITableViewCell *)[self.tableView cellForRowAtIndexPath:oldIndexPath];
-		UITableViewCell *selectedCell	= (UITableViewCell *)[self.tableView cellForRowAtIndexPath:_selectedIndexPath];
-		
-		if ([_delegate respondsToSelector:@selector(easyTableView:selectedView:atIndexPath:deselectedView:)]) {
-			UIView *selectedView = [selectedCell viewWithTag:CELL_CONTENT_TAG];
-			UIView *deselectedView = [deselectedCell viewWithTag:CELL_CONTENT_TAG];
-			
-			[_delegate easyTableView:self
-                        selectedView:selectedView
-                         atIndexPath:_selectedIndexPath
-                      deselectedView:deselectedView];
+		if ([_delegate respondsToSelector:@selector(easyTableView:didSelectCellAtIndexPath:)]) {
+			[_delegate easyTableView:self didSelectCellAtIndexPath:indexPath];
 		}
 	}
 }
@@ -167,7 +155,7 @@
 #pragma mark -
 #pragma mark Multiple Sections
 
--(CGFloat)tableView:(UITableView*)tableView heightForHeaderInSection:(NSInteger)section {
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
     if ([_dataSource respondsToSelector:@selector(easyTableView:viewForHeaderInSection:)]) {
         UIView *headerView = [_dataSource easyTableView:self viewForHeaderInSection:section];
         if (EasyTableViewOrientationIsHorizontal(_orientation)) {
@@ -179,7 +167,7 @@
     return 0.0;
 }
 
--(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
     if ([_dataSource respondsToSelector:@selector(easyTableView:viewForFooterInSection:)]) {
         UIView *footerView = [_dataSource easyTableView:self viewForFooterInSection:section];
         if (EasyTableViewOrientationIsHorizontal(_orientation)) {
@@ -217,7 +205,7 @@
 	return rotatedView;
 }
 
--(UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
     if ([_dataSource respondsToSelector:@selector(easyTableView:viewForHeaderInSection:)]) {
 		UIView *sectionView = [_dataSource easyTableView:self viewForHeaderInSection:section];
 		return [self viewToHoldSectionView:sectionView];
@@ -225,7 +213,7 @@
     return nil;
 }
 
--(UIView*)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
+- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
     if ([_dataSource respondsToSelector:@selector(easyTableView:viewForFooterInSection:)]) {
 		UIView *sectionView = [_dataSource easyTableView:self viewForFooterInSection:section];
 		return [self viewToHoldSectionView:sectionView];
@@ -233,8 +221,7 @@
     return nil;
 }
 
--(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     if ([_dataSource respondsToSelector:@selector(numberOfSectionsInEasyTableView:)]) {
         return [_dataSource numberOfSectionsInEasyTableView:self];
     }
@@ -281,14 +268,12 @@
 	[self setSelectedIndexPath:indexPath];
 }
 
-
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if ([_dataSource respondsToSelector:@selector(easyTableView:heightOrWidthForCellAtIndexPath:)]) {
         return [_dataSource easyTableView:self heightOrWidthForCellAtIndexPath:indexPath];
     }
     return _cellWidthOrHeight;
 }
-
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	// Don't allow the currently selected cell to be selectable
@@ -298,12 +283,11 @@
 	return indexPath;
 }
 
-
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-	if ([_delegate respondsToSelector:@selector(easyTableView:scrolledToOffset:)])
-		[_delegate easyTableView:self scrolledToOffset:self.contentOffset];
+	if ([_delegate respondsToSelector:@selector(easyTableView:didScrollToContentOffset:)]) {
+		[_delegate easyTableView:self didScrollToContentOffset:self.contentOffset];
+    }
 }
-
 
 #pragma mark -
 #pragma mark TableViewDataSource
@@ -378,8 +362,8 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 	NSUInteger numOfItems = 0;
 	
-	if ([_dataSource respondsToSelector:@selector(numberOfCellsForEasyTableView:inSection:)]) {
-		numOfItems = [_dataSource numberOfCellsForEasyTableView:self inSection:section];
+	if ([_dataSource respondsToSelector:@selector(easyTableView:numberOfCellsInSection:)]) {
+		numOfItems = [_dataSource easyTableView:self numberOfCellsInSection:section];
 		
 		// Animate any changes in the number of items
 		[tableView beginUpdates];
@@ -396,8 +380,9 @@
     UIView *content = [_dataSource easyTableView:self viewForRect:rotatedView.bounds forCellAtIndexPath:indexPath];
 	
 	// Add a default view if none is provided
-	if (content == nil)
+	if (content == nil) {
 		content = [[UIView alloc] initWithFrame:rotatedView.bounds];
+    }
 	
 	content.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
 	content.tag = CELL_CONTENT_TAG;
@@ -407,8 +392,7 @@
 
 - (void)setDataForRotatedView:(UIView *)rotatedView forIndexPath:(NSIndexPath *)indexPath {
 	UIView *content = [rotatedView viewWithTag:CELL_CONTENT_TAG];
-	
-    [_dataSource easyTableView:self setDataForView:content forCellAtIndexPath:indexPath];
+    [_dataSource easyTableView:self setDataInView:content forCellAtIndexPath:indexPath];
 }
 
 

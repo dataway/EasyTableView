@@ -115,7 +115,7 @@
 
 // These delegate methods support both example views - first delegate method creates the necessary views
 
-- (UIView *)easyTableView:(EasyTableView *)easyTableView viewForRect:(CGRect)rect forCellAtIndexPath:(NSIndexPath *)indexPath {
+- (UIView *)easyTableView:(EasyTableView *)tableView viewForRect:(CGRect)rect forCellAtIndexPath:(NSIndexPath *)indexPath {
 	CGRect labelRect		= CGRectMake(10, 10, rect.size.width-20, rect.size.height-20);
 	UILabel *label			= [[UILabel alloc] initWithFrame:labelRect];
 	label.textAlignment		= UITextAlignmentCenter;
@@ -123,7 +123,7 @@
 	label.font				= [UIFont boldSystemFontOfSize:60];
 	
 	// Use a different color for the two different examples
-	if (easyTableView == horizontalView) {
+	if (tableView == horizontalView) {
         if (indexPath.row % 2 == 0) {
             label.backgroundColor = [[UIColor redColor] colorWithAlphaComponent:0.3];
         } else {
@@ -142,7 +142,7 @@
 	return label;
 }
 
-- (NSString *)easyTableView:(EasyTableView *)easyTableView reuseIdentifierForCellAtIndexPath:(NSIndexPath *)indexPath {
+- (NSString *)easyTableView:(EasyTableView *)tableView reuseIdentifierForCellAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.row % 2 == 0) {
         return @"redCell";
     } else {
@@ -152,18 +152,18 @@
 
 // Second delegate populates the views with data from a data source
 
-- (void)easyTableView:(EasyTableView *)easyTableView setDataForView:(UIView *)view forCellAtIndexPath:(NSIndexPath *)indexPath {
+- (void)easyTableView:(EasyTableView *)tableView setDataInView:(UIView *)view forCellAtIndexPath:(NSIndexPath *)indexPath {
 	UILabel *label	= (UILabel *)view;
 	label.text		= [NSString stringWithFormat:@"%i", indexPath.row];
 	
 	// selectedIndexPath can be nil so we need to test for that condition
-	BOOL isSelected = (easyTableView.selectedIndexPath) ? ([easyTableView.selectedIndexPath compare:indexPath] == NSOrderedSame) : NO;
+	BOOL isSelected = (tableView.selectedIndexPath) ? ([tableView.selectedIndexPath compare:indexPath] == NSOrderedSame) : NO;
 	[self borderIsSelected:isSelected forView:view];		
 }
 
 // Optional delegate to track the selection of a particular cell
 
-- (void)easyTableView:(EasyTableView *)easyTableView selectedView:(UIView *)selectedView atIndexPath:(NSIndexPath *)indexPath deselectedView:(UIView *)deselectedView {
+- (void)easyTableView:(EasyTableView *)tableView selectedView:(UIView *)selectedView atIndexPath:(NSIndexPath *)indexPath deselectedView:(UIView *)deselectedView {
 	[self borderIsSelected:YES forView:selectedView];		
 	
 	if (deselectedView) 
@@ -173,8 +173,8 @@
 	bigLabel.text	= label.text;
 }
 
-- (CGFloat)easyTableView:(EasyTableView *)easyTableView heightOrWidthForCellAtIndexPath:(NSIndexPath *)indexPath {
-    if (easyTableView == self.horizontalView) {
+- (CGFloat)easyTableView:(EasyTableView *)tableView heightOrWidthForCellAtIndexPath:(NSIndexPath *)indexPath {
+    if (tableView == self.horizontalView) {
         if (indexPath.row % 2 == 0) {
             return HORIZONTAL_TABLEVIEW_HEIGHT;
         } else {
@@ -191,26 +191,26 @@
 #ifdef SHOW_MULTIPLE_SECTIONS
 
 // Delivers the number of sections in the TableView
-- (NSUInteger)numberOfSectionsInEasyTableView:(EasyTableView*)easyTableView{
+- (NSUInteger)numberOfSectionsInEasyTableView:(EasyTableView*)tableView{
     return NUM_OF_SECTIONS;
 }
 
 // Delivers the number of cells in each section, this must be implemented if numberOfSectionsInEasyTableView is implemented
--(NSUInteger)numberOfCellsForEasyTableView:(EasyTableView *)view inSection:(NSInteger)section {
+-(NSUInteger)easyTableView:(EasyTableView *)tableView numberOfCellsInSection:(NSInteger)section {
     return NUM_OF_CELLS;
 }
 
 // The height of the header section view MUST be the same as your HORIZONTAL_TABLEVIEW_HEIGHT (horizontal EasyTableView only)
-- (UIView *)easyTableView:(EasyTableView*)easyTableView viewForHeaderInSection:(NSInteger)section {
+- (UIView *)easyTableView:(EasyTableView*)tableView viewForHeaderInSection:(NSInteger)section {
     UILabel *label = [[UILabel alloc] init];
 	label.text = @"HEADER";
 	label.textColor = [UIColor whiteColor];
 	label.textAlignment = UITextAlignmentCenter;
    
-	if (easyTableView == self.horizontalView) {
+	if (tableView == self.horizontalView) {
 		label.frame = CGRectMake(0, 0, VERTICAL_TABLEVIEW_WIDTH, HORIZONTAL_TABLEVIEW_HEIGHT);
 	}
-	if (easyTableView == self.verticalView) {
+	if (tableView == self.verticalView) {
 		label.frame = CGRectMake(0, 0, VERTICAL_TABLEVIEW_WIDTH, 20);
 	}
 
@@ -226,17 +226,17 @@
 }
 
 // The height of the footer section view MUST be the same as your HORIZONTAL_TABLEVIEW_HEIGHT (horizontal EasyTableView only)
-- (UIView *)easyTableView:(EasyTableView*)easyTableView viewForFooterInSection:(NSInteger)section {
+- (UIView *)easyTableView:(EasyTableView*)tableView viewForFooterInSection:(NSInteger)section {
     UILabel *label = [[UILabel alloc] init];
 	label.text = @"FOOTER";
 	label.textColor = [UIColor yellowColor];
 	label.textAlignment = UITextAlignmentCenter;
 	label.frame = CGRectMake(0, 0, VERTICAL_TABLEVIEW_WIDTH, 20);
     
-	if (easyTableView == self.horizontalView) {
+	if (tableView == self.horizontalView) {
 		label.frame = CGRectMake(0, 0, VERTICAL_TABLEVIEW_WIDTH, HORIZONTAL_TABLEVIEW_HEIGHT);
 	}
-	if (easyTableView == self.verticalView) {
+	if (tableView == self.verticalView) {
 		label.frame = CGRectMake(0, 0, VERTICAL_TABLEVIEW_WIDTH, 20);
 	}
 	

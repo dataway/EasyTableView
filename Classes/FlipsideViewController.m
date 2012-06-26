@@ -71,7 +71,7 @@
 
 #pragma mark - EasyTableViewDelegate
 
-- (UIView *)easyTableView:(EasyTableView *)easyTableView viewForRect:(CGRect)rect forCellAtIndexPath:(NSIndexPath *)indexPath {
+- (UIView *)easyTableView:(EasyTableView *)tableView viewForRect:(CGRect)rect forCellAtIndexPath:(NSIndexPath *)indexPath {
 	// Create a container view for an EasyTableView cell
 	UIView *container = [[UIView alloc] initWithFrame:rect];;
 	
@@ -98,7 +98,7 @@
 
 // Second delegate populates the views with data from a data source
 
-- (void)easyTableView:(EasyTableView *)easyTableView setDataForView:(UIView *)view forCellAtIndexPath:(NSIndexPath *)indexPath {
+- (void)easyTableView:(EasyTableView *)tableView setDataInView:(UIView *)view forCellAtIndexPath:(NSIndexPath *)indexPath {
 	// Set the image title for the given index
 	UILabel *label = (UILabel *)[view viewWithTag:LABEL_TAG];
 	label.text = [self.imageStore.titles objectAtIndex:indexPath.row];
@@ -108,11 +108,11 @@
 	imageView.image = [self.imageStore imageAtIndex:indexPath.row];
 }
 
-- (NSUInteger)numberOfCellsForEasyTableView:(EasyTableView *)view inSection:(NSInteger)section {
+- (NSUInteger)easyTableView:(EasyTableView *)tableView numberOfCellsInSection:(NSInteger)section {
     return [self.imageStore.titles count];
 }
 
-- (CGFloat)easyTableView:(EasyTableView *)easyTableView heightOrWidthForCellAtIndexPath:(NSIndexPath *)indexPath {
+- (CGFloat)easyTableView:(EasyTableView *)tableView heightOrWidthForCellAtIndexPath:(NSIndexPath *)indexPath {
     return TABLECELL_WIDTH;
 }
 
