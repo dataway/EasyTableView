@@ -80,7 +80,7 @@ typedef enum {
 @property (nonatomic, assign, readonly) EasyTableViewOrientation orientation;
 @property (nonatomic, assign) CGPoint contentOffset;
 
-- (id)initWithFrame:(CGRect)frame orientation:(EasyTableViewOrientation)orientation itemSize:(CGFloat)itemSize;
+- (id)initWithFrame:(CGRect)frame orientation:(EasyTableViewOrientation)orientation;
 - (void)reloadData;
 - (CGPoint)offsetForView:(UIView *)cell;
 - (void)setContentOffset:(CGPoint)offset animated:(BOOL)animated;

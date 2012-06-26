@@ -9,40 +9,38 @@
 #import <QuartzCore/QuartzCore.h>
 #import "EasyTableView.h"
 
+#define kDefaultCellWidthOrHeight 44.0
+
 #define EasyTableViewOrientationIsHorizontal(orientation) ((orientation) == EasyTableViewOrientationLeftToRight || (orientation) == EasyTableViewOrientationRightToLeft)
 #define EasyTableViewOrientationIsVertical(orientation) ((orientation) == EasyTableViewOrientationTopToBottom || (orientation) == EasyTableViewOrientationBottomToTop)
 
 
 @interface EasyTableView() <UITableViewDelegate, UITableViewDataSource>
-- (void)createTableWithOrientation:(EasyTableViewOrientation)orientation;
+- (void)createTable;
 - (void)prepareRotatedView:(UIView *)rotatedView forCellAtIndexPath:(NSIndexPath *)indexPath;
 - (void)setDataForRotatedView:(UIView *)rotatedView forIndexPath:(NSIndexPath *)indexPath;
+- (CGPoint)rotatedOffset:(CGPoint)offset;
 @end
 
 
-@implementation EasyTableView {
-	CGFloat _cellWidthOrHeight;
-}
-
+@implementation EasyTableView
 @synthesize delegate = _delegate, dataSource = _dataSource, cellBackgroundColor = _cellBackgroundColor, selectedIndexPath = _selectedIndexPath, orientation = _orientation;
 
 #pragma mark -
 #pragma mark Initialization
 
 
-- (id)initWithFrame:(CGRect)frame orientation:(EasyTableViewOrientation)orientation itemSize:(CGFloat)itemSize {
+- (id)initWithFrame:(CGRect)frame orientation:(EasyTableViewOrientation)orientation {
     if (self = [super initWithFrame:frame]) {
-		_cellWidthOrHeight	= itemSize;
-		
-		[self createTableWithOrientation:orientation];
+        _orientation = orientation;
+		[self createTable];
 	}
     return self;
 }
 
 
-- (void)createTableWithOrientation:(EasyTableViewOrientation)orientation {
+- (void)createTable {
 	// Save the orientation so that the table view cell knows how to set itself up
-	_orientation = orientation;
 	
 	UITableView *tableView;
 	if (EasyTableViewOrientationIsHorizontal(_orientation)) {
@@ -59,11 +57,11 @@
 	tableView.autoresizingMask	= UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 	
 	// Rotate the tableView as required by the orientation
-	if (orientation == EasyTableViewOrientationLeftToRight) {
+	if (_orientation == EasyTableViewOrientationLeftToRight) {
 		tableView.transform	= CGAffineTransformMakeRotation(-M_PI/2);
-    } else if (orientation == EasyTableViewOrientationBottomToTop) {
+    } else if (_orientation == EasyTableViewOrientationBottomToTop) {
 		tableView.transform	= CGAffineTransformMakeRotation(M_PI);
-    } else if (orientation == EasyTableViewOrientationRightToLeft) {
+    } else if (_orientation == EasyTableViewOrientationRightToLeft) {
 		tableView.transform	= CGAffineTransformMakeRotation(M_PI/2);
     }
 	
@@ -98,37 +96,31 @@
 	return visibleViews;
 }
 
-
-- (CGPoint)contentOffset {
-	CGPoint offset = self.tableView.contentOffset;
-	
-	if (EasyTableViewOrientationIsHorizontal(_orientation)) {
+- (CGPoint)rotatedOffset:(CGPoint)offset {
+	if (_orientation == EasyTableViewOrientationLeftToRight) {
 		offset = CGPointMake(offset.y, offset.x);
+    } else if (_orientation == EasyTableViewOrientationBottomToTop) {
+        offset = CGPointMake(self.bounds.size.width - offset.x, self.bounds.size.height - offset.y);
+    } else if (_orientation == EasyTableViewOrientationRightToLeft) {
+        offset = CGPointMake(self.bounds.size.height - offset.y, self.bounds.size.width - offset.x);
     }
-	
 	return offset;
 }
 
 
+- (CGPoint)contentOffset {
+	return [self rotatedOffset:self.tableView.contentOffset];
+}
+
+
 - (void)setContentOffset:(CGPoint)offset {
-	if (EasyTableViewOrientationIsHorizontal(_orientation)) {
-		self.tableView.contentOffset = CGPointMake(offset.y, offset.x);
-    } else {
-		self.tableView.contentOffset = offset;
-    }
+    self.tableView.contentOffset = [self rotatedOffset:offset];
 }
 
 
 - (void)setContentOffset:(CGPoint)offset animated:(BOOL)animated {
-	CGPoint newOffset;
-	
-	if (EasyTableViewOrientationIsHorizontal(_orientation)) {
-		newOffset = CGPointMake(offset.y, offset.x);
-	} else {
-		newOffset = offset;
-	}
-    
-	[self.tableView setContentOffset:newOffset animated:animated];
+    offset = [self rotatedOffset:offset];
+	[self.tableView setContentOffset:offset animated:animated];
 }
 
 
@@ -137,9 +129,7 @@
 
 - (void)selectCellAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated {
 	self.selectedIndexPath	= indexPath;
-	CGPoint defaultOffset	= CGPointMake(0, indexPath.row * _cellWidthOrHeight);
-	
-	[self.tableView setContentOffset:defaultOffset animated:animated];
+    [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionNone animated:animated];
 }
 
 
@@ -272,7 +262,7 @@
     if ([_dataSource respondsToSelector:@selector(easyTableView:heightOrWidthForCellAtIndexPath:)]) {
         return [_dataSource easyTableView:self heightOrWidthForCellAtIndexPath:indexPath];
     }
-    return _cellWidthOrHeight;
+    return kDefaultCellWidthOrHeight;
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
