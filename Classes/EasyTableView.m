@@ -259,8 +259,9 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if ([_dataSource respondsToSelector:@selector(easyTableView:heightOrWidthForCellAtIndexPath:)]) {
-        return [_dataSource easyTableView:self heightOrWidthForCellAtIndexPath:indexPath];
+    if ([_dataSource respondsToSelector:@selector(easyTableView:sizeOfCellAtIndexPath:)]) {
+        CGSize size = [_dataSource easyTableView:self sizeOfCellAtIndexPath:indexPath];
+        return EasyTableViewOrientationIsHorizontal(_orientation) ? size.width : size.height;
     }
     return kDefaultCellWidthOrHeight;
 }
@@ -283,11 +284,11 @@
 #pragma mark TableViewDataSource
 
 - (void)setBoundsForCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath {
-    CGFloat heightOrWidth = [_dataSource easyTableView:self heightOrWidthForCellAtIndexPath:indexPath];
+    CGSize size = [_dataSource easyTableView:self sizeOfCellAtIndexPath:indexPath];
 	if (EasyTableViewOrientationIsHorizontal(_orientation)) {
-		cell.bounds	= CGRectMake(0, 0, self.bounds.size.height, heightOrWidth);
+		cell.bounds	= CGRectMake(0, 0, self.bounds.size.height, size.width);
 	} else {
-		cell.bounds	= CGRectMake(0, 0, self.bounds.size.width, heightOrWidth);
+		cell.bounds	= CGRectMake(0, 0, self.bounds.size.width, size.height);
 	}
 }
 

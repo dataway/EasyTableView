@@ -58,7 +58,7 @@ typedef enum {
 
 @protocol EasyTableViewDataSource <NSObject>
 - (NSUInteger)easyTableView:(EasyTableView *)tableView numberOfCellsInSection:(NSInteger)section;
-- (CGFloat)easyTableView:(EasyTableView *)tableView heightOrWidthForCellAtIndexPath:(NSIndexPath *)indexPath;
+- (CGSize)easyTableView:(EasyTableView *)tableView sizeOfCellAtIndexPath:(NSIndexPath *)indexPath;
 - (UIView *)easyTableView:(EasyTableView *)tableView viewForRect:(CGRect)rect forCellAtIndexPath:(NSIndexPath *)indexPath;
 - (void)easyTableView:(EasyTableView *)tableView setDataInView:(UIView *)view forCellAtIndexPath:(NSIndexPath *)indexPath;
 @optional
